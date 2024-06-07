@@ -20,7 +20,7 @@ CREATE TABLE client (
 -- tabla independiente country
 CREATE TABLE country (
     CodCountry VARCHAR(5) NOT NULL,
-    NameCountry VARCHAR(47) NOT NULL,
+    CountryName VARCHAR(47) NOT NULL,
     Continent VARCHAR(16) NOT NULL,
     
     CONSTRAINT Pk_Country PRIMARY KEY (CodCountry)
@@ -41,8 +41,8 @@ CREATE TABLE service (
     IdService INT UNSIGNED NOT NULL AUTO_INCREMENT,
     ServiceName VARCHAR(45) NOT NULL,
     Description MEDIUMTEXT NOT NULL,
-    Cost DECIMAL(15, 2) NOT NULL,
-    EstimateDuration TIMESTAMP NOT NULL,
+    Cost DECIMAL(15,2),
+    DaysEstimated INT UNSIGNED,
     
     CONSTRAINT Pk_Service PRIMARY KEY (IdService)
 );
@@ -133,9 +133,10 @@ CREATE TABLE piece (
 -- tabla dependiente order_detail
 CREATE TABLE order_detail (
     IdOrderDetail INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    FkPiece INT UNSIGNED,
-    Amount INT UNSIGNED,
-    Price DECIMAL(15, 2) UNSIGNED,
+    FkPiece INT UNSIGNED NOT NULL,
+    Amount INT UNSIGNED NOT NULL,
+    UnitPrice DECIMAL(15, 2) UNSIGNED NOT NULL,
+    Totalprice DECIMAL(15,2) UNSIGNED NOT NULL,
 
     CONSTRAINT Pk_OrderDetail PRIMARY KEY (IdOrderDetail),
     CONSTRAINT Fk_Piece_OrderDetail FOREIGN KEY (FkPiece) REFERENCES piece(IdPiece)
@@ -151,17 +152,6 @@ CREATE TABLE inventory (
     CONSTRAINT Pk_Inventory PRIMARY KEY (IdInventory),
     CONSTRAINT Fk_Piece_Inventory FOREIGN KEY (FkPiece) REFERENCES piece (IdPiece),
     CONSTRAINT Fk_Area_Inventory FOREIGN KEY (FkArea) REFERENCES area (IdArea)
-);
-
--- tabla dependiente piece_repair
-CREATE TABLE piece_repair (
-    IdPieceRepair INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    FkPiece INT UNSIGNED NOT NULL,
-    Amount INT UNSIGNED,
-    Price DECIMAL(15, 2) UNSIGNED NOT NULL,
-
-    CONSTRAINT Pk_PieceRepair PRIMARY KEY (IdPieceRepair),
-    CONSTRAINT Fk_Piece_PieceRepair FOREIGN KEY (FkPiece) REFERENCES piece (IdPiece)
 );
 
 -- tabla dependiente position
@@ -199,14 +189,14 @@ CREATE TABLE purchase_order (
     FkEmploye INT UNSIGNED NOT NULL,
 
     CONSTRAINT Pk_PurchaseOrder PRIMARY KEY (IdPurchaseOrder),
-    CONSTRAINT Fk_Suplier_PurchaseOrder FOREIGN KEY (FkSuplier) REFERENCES suplier (IdSupiler),
+    CONSTRAINT Fk_Suplier_PurchaseOrder FOREIGN KEY (FkSuplier) REFERENCES suplier (IdSuplier),
     CONSTRAINT Fk_Employe_PurchaseOrder FOREIGN KEY (FkEmploye) REFERENCES employe (IdEmploye)
 );
 
 -- tabla dependiente brand
 CREATE TABLE brand (
     CodBrand VARCHAR(5) NOT NULL,
-    NameBrand VARCHAR(100) NOT NULL,
+    BrandName VARCHAR(100) NOT NULL,
     FkCountry VARCHAR(5) NOT NULL,
     
     CONSTRAINT Pk_Brand PRIMARY KEY (CodBrand),
@@ -260,11 +250,12 @@ CREATE TABLE repair (
 CREATE TABLE parts_used (
     IdPartsUsed INT UNSIGNED NOT NULL AUTO_INCREMENT,
     FkRepair INT UNSIGNED NOT NULL,
-    FkPieceRepair INT UNSIGNED NOT NULL,
+    FkPiece INT UNSIGNED NOT NULL,
+    Amount INT UNSIGNED,
 
     CONSTRAINT Pk_PartsUsed PRIMARY KEY (IdPartsUsed),
     CONSTRAINT Fk_Repair_PartsUsed FOREIGN KEY (FkRepair) REFERENCES repair (IdRepair),
-    CONSTRAINT Fk_PieceRepair_PartsUsed FOREIGN KEY (FkPieceRepair) REFERENCES piece_repair (IdPieceRepair)
+    CONSTRAINT Fk_Piece_PartsUsed FOREIGN KEY (FkPiece) REFERENCES piece (IdPiece)
 );
 
 -- tabla dependiente billing
@@ -281,8 +272,6 @@ CREATE TABLE billing (
     CONSTRAINT Fk_Repair_Billing FOREIGN KEY (FkRepair) REFERENCES repair (IdRepair),
     CONSTRAINT Fk_Service_Billing FOREIGN KEY (FkService) REFERENCES service (IdService)
 );
-
-DROP TABLE billing;
 
 -- tabla dependiente producto
 CREATE TABLE product (
