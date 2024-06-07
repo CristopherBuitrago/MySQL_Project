@@ -75,10 +75,12 @@ por nombre de cliente y el `LIMIT` para obtener solo los 10 primeros resultados.
 
 ```sql
 
-SELECT p.IdPart AS PartId, p.Name AS PartName, SUM(pi.Quantity) AS Quantity
-FROM part p
-JOIN partinventory pi ON p.IdPart = pi.FkPart
-GROUP BY p.IdPart, p.Name
-ORDER BY p.Name;
+SELECT p.IdPiece AS Piece_Id, p.PieceName AS Piece_Name, SUM(i.Amount) AS Quantity
+FROM piece p
+JOIN inventory i ON p.IdPiece = i.FkPiece
+GROUP BY p.IdPiece, p.PieceName
+ORDER BY p.PieceName;
 
 ```
+
+#### Explicacion
