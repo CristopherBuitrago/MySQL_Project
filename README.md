@@ -381,3 +381,113 @@ WHERE r.Date BETWEEN '2024-01-01' AND '2024-05-01';
 #### Explicacion (pendiente)
 
 ## Subconsultas
+
+### 1. Obtener el cliente que ha gastado más en reparaciones durante el último año.
+
+```sql
+SELECT c.Name1 AS Customer, SUM(b.Total) AS Total_Paid, b.Date
+FROM billing b
+JOIN client c
+ON c.IdClient = b.FkClient
+WHERE b.Total = (SELECT MAX(b2.Total) FROM billing b2) AND YEAR(b.Date) = '2023'
+GROUP BY Customer, b.Date;
+```
+
+#### Resultado 
+
+![alt text](image19.png)
+
+#### Explicacion
+La consulta utiliza las tablas `client` y `billing` para obtener el cliente que ha gastado más en reparaciones durante el ultimo año. Se utiliza la clausula `JOIN` para relacionar las tablas correspondientes y obtener el resultado deseado, además, se usa el `WHERE` para especificar la condicion deseada, Dentro de este se hace uso de una **Subconsulta** para obtener el maximo pagado por un cliente. Finalmente se hace uso de la clausula `YEAR()` para especificar que el año sea el ultimo año registrado.
+
+### 3. Obtener los proveedores que suministran las piezas más caras
+
+```sql
+SELECT p.PieceName AS Piece, (SELECT s.SuplierName FROM suplier s WHERE s.IdSuplier = p.FkSuplier) AS Suplier, p.Price
+FROM piece p
+ORDER BY p.Price DESC
+LIMIT 6;
+```
+
+#### Resultado
+
+![alt text](image20.png)
+
+#### Explicacion (Pendiente)
+
+### 4. Listar las reparaciones que no utilizaron piezas específicas durante el último año
+
+```sql
+SELECT r.IdRepair
+FROM repair r
+WHERE r.Date BETWEEN '2023-06-01' AND '2024-06-01'
+AND r.IdRepair NOT IN (
+    SELECT up.FkRepair
+    FROM used_parts up
+    WHERE up.FkPiece = 3
+)
+LIMIT 6;
+```
+
+#### Resultado 
+
+![alt text](image21.png)
+
+#### Explicacion
+
+### 5. Obtener las piezas que están en inventario por debajo del 10% del stock inicial
+
+```sql
+SELECT (
+    SELECT p.PieceName
+    FROM piece p
+    WHERE p.IdPiece = i.FkPiece
+) AS Piece
+FROM inventory i
+WHERE i.Amount < (
+    SELECT 0.1 * i.AvaliableSpace
+    FROM inventory ii
+    WHERE ii.FkPiece = i.FkPiece
+    LIMIT 1
+);
+```
+
+#### Resultado
+
+![alt text](image22.png)
+
+## Procedimientos Almacenados
+ 
+### 1. Crear un procedimiento almacenado para insertar una nueva reparación.
+
+```sql
+DELIMITER $$
+DROP PROCEDURE IF EXISTS insertRepair $$
+CREATE PROCEDURE insertRepair (
+    IN inDate DATE,
+    IN FkVehicle INT,
+    IN FkEmploye INT,
+    IN FkService INT,
+    IN Description MEDIUMTEXT,
+    IN WorkedHours INT
+)
+BEGIN 
+    INSERT INTO repair (Date, FkVehicle, FkEmploye, FkService, TotalCost, Description, WorkedHours)
+    VALUES (
+        inDate,
+        FkVehicle,
+        FkEmploye,
+        FkService,
+        (SELECT s.Cost * WorkedHours FROM service s WHERE s.IdService = FkService),
+        Description,
+        WorkedHours
+    );
+END $$
+DELIMITER ;
+```
+
+#### Resultado
+
+![alt text](image23.png)
+
+### 

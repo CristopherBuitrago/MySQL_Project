@@ -297,8 +297,8 @@ INSERT INTO inventory (FkPiece, Amount, FkArea, AvaliableSpace) VALUES
 (17, 40, 7, 70),   
 (18, 50, 8, 70),   
 (19, 60, 9, 70),   
-(20, 70, 10, 70);
-
+(20, 70, 10, 70),
+(1,2,3,70);
 -- position
 INSERT INTO position (PositionName, Description, FkArea) VALUES
 ('Receptionist', 'Responsible for greeting customers and managing inquiries at the reception area.', 1),
