@@ -148,6 +148,7 @@ CREATE TABLE inventory (
     FkPiece INT UNSIGNED NOT NULL,
     Amount INT UNSIGNED,
     FkArea INT UNSIGNED NOT NULL,
+    AvaliableSpace INT UNSIGNED NOT NULL,
     
     CONSTRAINT Pk_Inventory PRIMARY KEY (IdInventory),
     CONSTRAINT Fk_Piece_Inventory FOREIGN KEY (FkPiece) REFERENCES piece (IdPiece),
@@ -239,6 +240,7 @@ CREATE TABLE repair (
     FkService INT UNSIGNED NOT NULL,
     TotalCost DECIMAL(15,2) UNSIGNED NOT NULL,
     Description MEDIUMTEXT NOT NULL,
+    WorkedHours INT UNSIGNED NOT NULL,
 
     CONSTRAINT Pk_Repair PRIMARY KEY (IdRepair),
     CONSTRAINT Fk_Vehicle_Repair FOREIGN KEY (FkVehicle) REFERENCES vehicle (IdVehicle),
@@ -247,15 +249,15 @@ CREATE TABLE repair (
 );
 
 -- tabla dependiente parts_used
-CREATE TABLE parts_used (
-    IdPartsUsed INT UNSIGNED NOT NULL AUTO_INCREMENT,
+CREATE TABLE used_parts (
+    IdUsedParts INT UNSIGNED NOT NULL AUTO_INCREMENT,
     FkRepair INT UNSIGNED NOT NULL,
     FkPiece INT UNSIGNED NOT NULL,
     Amount INT UNSIGNED,
 
-    CONSTRAINT Pk_PartsUsed PRIMARY KEY (IdPartsUsed),
-    CONSTRAINT Fk_Repair_PartsUsed FOREIGN KEY (FkRepair) REFERENCES repair (IdRepair),
-    CONSTRAINT Fk_Piece_PartsUsed FOREIGN KEY (FkPiece) REFERENCES piece (IdPiece)
+    CONSTRAINT Pk_UsedParts PRIMARY KEY (IdUsedParts),
+    CONSTRAINT Fk_Repair_UsedParts FOREIGN KEY (FkRepair) REFERENCES repair (IdRepair),
+    CONSTRAINT Fk_Piece_UsedParts FOREIGN KEY (FkPiece) REFERENCES piece (IdPiece)
 );
 
 -- tabla dependiente billing

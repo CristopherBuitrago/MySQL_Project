@@ -277,27 +277,27 @@ INSERT INTO order_detail (FkPiece, Amount, UnitPrice, TotalPrice) VALUES
 (19, 1, 79.99, 79.99);
 
 -- inventory
-INSERT INTO inventory (FkPiece, Amount, FkArea) VALUES
-(1, 50, 1),    
-(2, 30, 2),    
-(3, 20, 3),    
-(4, 40, 4),    
-(5, 60, 5),    
-(6, 25, 6),    
-(7, 35, 7),    
-(8, 45, 8),    
-(9, 55, 9),    
-(10, 65, 10),  
-(11, 15, 1),   
-(12, 10, 2),   
-(13, 20, 3),   
-(14, 30, 4),   
-(15, 25, 5),   
-(16, 35, 6),   
-(17, 40, 7),   
-(18, 50, 8),   
-(19, 60, 9),   
-(20, 70, 10);
+INSERT INTO inventory (FkPiece, Amount, FkArea, AvaliableSpace) VALUES
+(1, 50, 1, 70),    
+(2, 30, 2, 70),    
+(3, 20, 3, 70),    
+(4, 40, 4, 70),    
+(5, 60, 5, 70),    
+(6, 25, 6, 70),    
+(7, 35, 7, 70),    
+(8, 45, 8, 70),    
+(9, 55, 9, 70),    
+(10, 65, 10, 70),  
+(11, 15, 1, 70),   
+(12, 10, 2, 70),   
+(13, 20, 3, 70),   
+(14, 30, 4, 70),   
+(15, 25, 5, 70),   
+(16, 35, 6, 70),   
+(17, 40, 7, 70),   
+(18, 50, 8, 70),   
+(19, 60, 9, 70),   
+(20, 70, 10, 70);
 
 -- position
 INSERT INTO position (PositionName, Description, FkArea) VALUES
@@ -495,31 +495,31 @@ INSERT INTO date_client (Date, FkClient, FkVehicle, FkService) VALUES
     ('2024-01-15', 15, 15, 15);
 
 -- repair
-INSERT INTO repair (Date, FkVehicle, FkEmploye, FkService, TotalCost, Description)
+INSERT INTO repair (Date, FkVehicle, FkEmploye, FkService, TotalCost, Description, WorkedHours)
 VALUES
-    ('2024-01-05', 1, 1, 1, 150.00, 'Engine repair'),
-    ('2024-01-10', 2, 2, 2, 200.00, 'Brake replacement'),
-    ('2024-01-15', 3, 3, 3, 300.00, 'Transmission overhaul'),
-    ('2024-01-20', 4, 4, 4, 250.00, 'Oil change and filter replacement'),
-    ('2024-01-25', 5, 5, 5, 180.00, 'Tire rotation and balancing'),
-    ('2024-02-01', 6, 6, 1, 220.00, 'Suspension repair'),
-    ('2024-02-05', 7, 7, 2, 190.00, 'Battery replacement'),
-    ('2024-02-10', 8, 8, 3, 280.00, 'Cooling system flush'),
-    ('2024-02-15', 9, 9, 4, 230.00, 'Spark plug replacement'),
-    ('2024-02-20', 10, 10, 5, 170.00, 'Wheel alignment'),
-    ('2024-02-25', 11, 11, 1, 200.00, 'Exhaust system repair'),
-    ('2024-03-01', 12, 12, 2, 210.00, 'Air conditioning recharge'),
-    ('2024-03-05', 13, 13, 3, 320.00, 'Electrical system diagnosis'),
-    ('2024-03-10', 14, 14, 4, 240.00, 'Fuel injector cleaning'),
-    ('2024-03-15', 15, 15, 5, 160.00, 'Headlight replacement'),
-    ('2024-03-20', 1, 1, 1, 170.00, 'Ignition coil replacement'),
-    ('2024-03-25', 2, 2, 2, 190.00, 'Starter motor replacement'),
-    ('2024-04-01', 3, 3, 3, 310.00, 'Brake pad replacement'),
-    ('2024-04-05', 4, 4, 4, 220.00, 'Radiator replacement'),
-    ('2024-04-10', 5, 5, 5, 150.00, 'Alternator repair');
+    ('2024-01-05', 1, 1, 1, 150.00, 'Engine repair', 10),
+    ('2024-01-10', 2, 2, 2, 200.00, 'Brake replacement', 10),
+    ('2024-01-15', 3, 3, 3, 300.00, 'Transmission overhaul',5),
+    ('2024-01-20', 4, 4, 4, 250.00, 'Oil change and filter replacement',4),
+    ('2024-01-25', 5, 5, 5, 180.00, 'Tire rotation and balancing',2),
+    ('2024-02-01', 6, 6, 1, 220.00, 'Suspension repair',2),
+    ('2024-02-05', 7, 7, 2, 190.00, 'Battery replacement',2),
+    ('2024-02-10', 8, 8, 3, 280.00, 'Cooling system flush',2),
+    ('2024-02-15', 9, 9, 4, 230.00, 'Spark plug replacement',2),
+    ('2024-02-20', 10, 10, 5, 170.00, 'Wheel alignment',2),
+    ('2024-02-25', 11, 11, 1, 200.00, 'Exhaust system repair',2),
+    ('2024-03-01', 12, 12, 2, 210.00, 'Air conditioning recharge',2),
+    ('2024-03-05', 13, 13, 3, 320.00, 'Electrical system diagnosis',5),
+    ('2024-03-10', 14, 14, 4, 240.00, 'Fuel injector cleaning',5),
+    ('2024-03-15', 15, 15, 5, 160.00, 'Headlight replacement',5),
+    ('2024-03-20', 1, 1, 1, 170.00, 'Ignition coil replacement',5),
+    ('2024-03-25', 2, 2, 2, 190.00, 'Starter motor replacement',5),
+    ('2024-04-01', 3, 3, 3, 310.00, 'Brake pad replacement', 10),
+    ('2024-04-05', 4, 4, 4, 220.00, 'Radiator replacement', 10),
+    ('2024-04-10', 5, 5, 5, 150.00, 'Alternator repair', 10);
 
 -- parts used
-INSERT INTO parts_used (FkRepair, FkPiece, Amount)
+INSERT INTO used_parts (FkRepair, FkPiece, Amount)
 VALUES
     (1, 1, 2),  -- Repair 1 used 2 pieces of Piece 1
     (2, 2, 3),  -- Repair 2 used 3 pieces of Piece 2
