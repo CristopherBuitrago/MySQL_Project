@@ -40,7 +40,7 @@ descripción de la reparación.
 
 ### 2. Calcular el costo total de todas las reparaciones realizadas por un empleado específico en un período de tiempo
 
-```sq
+```sql
 SELECT e.IdEmploye AS ID, e.Name1 AS
 Employee, SUM(r.TotalCost) AS TotalCost
 FROM repair r
@@ -252,7 +252,8 @@ GROUP BY Customer;
 
 ![alt text](ResultImages/image10.png)
 
-#### Explicacion (pendiente)
+#### Explicacion 
+La consulta hace uso de las tablas `client` y `billing` para obtener el costo total de reparaciones para cada cliente en un periodo específico. Utilizamos la clausula `JOIN` para relacionar las tablas correspondientes y obtener el resultado deseado, por otra parte, se usa la clausula `WHERE` para especificar la condicion deseada. Por ultimo, hacemos uso de la clausula `GROUP BY` para agrupar los resultados por el nombre del cliente.
 
 ### 12. Listar los empleados con mayor cantidad de reparaciones realizadas en un período específico
 
@@ -269,7 +270,8 @@ GROUP BY Employee;
 
 ![alt text](ResultImages/image11.png)
 
-#### Explicacion (pendiente)
+#### Explicacion 
+La consulta hace uso de las tablas `repair` y `employe` para listar los empleados con mayor cantidad de reparaciones realizadas en un período específico. Utilizamos la claus
 
 ### 13. Obtener las piezas más utilizadas en reparaciones durante un período específico
 
