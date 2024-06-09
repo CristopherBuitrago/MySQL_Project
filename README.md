@@ -395,7 +395,7 @@ GROUP BY Customer, b.Date;
 
 #### Resultado 
 
-![alt text](image19.png)
+![alt text](ResultImages/image19.png)
 
 #### Explicacion
 La consulta utiliza las tablas `client` y `billing` para obtener el cliente que ha gastado más en reparaciones durante el ultimo año. Se utiliza la clausula `JOIN` para relacionar las tablas correspondientes y obtener el resultado deseado, además, se usa el `WHERE` para especificar la condicion deseada, Dentro de este se hace uso de una **Subconsulta** para obtener el maximo pagado por un cliente. Finalmente se hace uso de la clausula `YEAR()` para especificar que el año sea el ultimo año registrado.
@@ -411,7 +411,7 @@ LIMIT 6;
 
 #### Resultado
 
-![alt text](image20.png)
+![alt text](ResultImages/image20.png)
 
 #### Explicacion (Pendiente)
 
@@ -431,7 +431,7 @@ LIMIT 6;
 
 #### Resultado 
 
-![alt text](image21.png)
+![alt text](ResultImages/image21.png)
 
 #### Explicacion
 
@@ -454,7 +454,7 @@ WHERE i.Amount < (
 
 #### Resultado
 
-![alt text](image22.png)
+![alt text](ResultImages/image22.png)
 
 ## Procedimientos Almacenados
  
@@ -488,6 +488,322 @@ DELIMITER ;
 
 #### Resultado
 
-![alt text](image23.png)
+![alt text](ResultImages/image23.png)
 
-### 
+### 2. Crear un procedimiento almacenado para actualizar el inventario de una pieza.
+
+```sql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS updatePieceInventory $$
+
+CREATE PROCEDURE updatePieceInventory(
+    IN idInventory INT,
+    IN Amount INT,
+    IN NewAvaliableSpace INT
+)
+BEGIN
+    UPDATE inventory i
+    SET
+        i.Amount = Amount,
+        i.AvaliableSpace = NewAvaliableSpace
+    WHERE
+        i.IdInventory = idInventory;
+END $$
+
+DELIMITER ;
+
+```
+
+#### Resultado
+
+![alt text](ResultImages/image24.png)
+
+### 3. Crear un procedimiento almacenado para eliminar una cita
+
+```sql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS deleteClientDate $$
+
+CREATE PROCEDURE deleteClientDate(
+
+    IN id INT
+
+)
+BEGIN
+
+    DELETE FROM date_client WHERE IdDateClient = id;
+
+END $$
+
+DELIMITER ;
+```
+
+#### Resultado
+
+![alt text](ResultImages/image25.png)
+
+### 4. Crear un procedimiento almacenado para generar una factura
+
+```sql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS generateBilling $$
+
+CREATE PROCEDURE generateBilling(
+    IN date DATE,
+    IN IdClient INT,
+    IN IdRepair INT
+)
+BEGIN
+    -- Insert the data
+    INSERT INTO billing(Date, FkClient, FkRepair, FkService, Total)
+    VALUES (
+        date,
+        IdClient,
+        IdRepair,
+        (
+            SELECT r.FkService
+            FROM repair r
+            WHERE r.IdRepair = IdRepair
+            LIMIT 1
+        ),
+        (
+            SELECT (s.Cost * r.WorkedHours)
+            FROM repair r
+            JOIN service s ON s.IdService = r.FkService
+            WHERE r.IdRepair = IdRepair
+            LIMIT 1
+        )
+    );
+
+    -- Select the data
+    SELECT 
+        b.IdBilling AS ID_Billing,
+        b.Date,
+        b.FkClient AS Client,
+        b.FkRepair AS Repair,
+        b.FkService AS Service,
+        b.Total
+    FROM billing b
+    ORDER BY b.IdBilling DESC
+    LIMIT 1;
+END $$
+
+DELIMITER ;
+```
+
+#### Resultado
+
+![alt text](ResultImages/image26.png)
+
+### 5. Crear un procedimiento almacenado para obtener el historial de reparaciones de un vehículo
+
+```sql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS showVehicleHistory $$
+
+CREATE PROCEDURE showVehicleHistory(
+    IN IdVehicle INT
+)
+BEGIN
+    -- Query to show the vehicle history
+    SELECT r.IdRepair AS ID_Repair,
+           r.Date,
+           r.FkVehicle AS Vehicle,
+           e.Name1 AS Employe,
+           s.ServiceName AS Service,
+           r.TotalCost AS Total
+    FROM repair AS r
+    JOIN employe AS e
+    ON e.IdEmploye = r.FkEmploye
+    JOIN service AS s
+    ON s.IdService = r.FkService
+    WHERE r.FkVehicle = IdVehicle;
+END $$
+
+DELIMITER ;
+```
+
+#### Resultado 
+
+![alt text](ResultImages/image27.png)
+
+### 6. Crear un procedimiento almacenado para calcular el costo total de reparaciones de un cliente en un período
+
+```sql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS calculateTotalCost $$
+
+CREATE PROCEDURE calculateTotalCost (
+    IN IdClient INT,
+    IN Date1 DATE,
+    IN Date2 DATE
+)
+BEGIN
+    SELECT SUM(b.Total) AS Total
+    FROM billing AS b
+    WHERE b.FkClient = IdClient AND (
+        b.Date BETWEEN Date1 AND Date2
+    );
+END $$
+
+DELIMITER ;
+```
+
+#### Resultado
+
+![alt text](ResultImages/image28.png)
+
+### 7. Crear un procedimiento almacenado para obtener la lista de vehículos que requieren mantenimiento basado en el kilometraje.
+
+```sql
+DELIMITER $$
+
+DROP PROCEDURE getMaintenance $$
+
+CREATE PROCEDURE getMaintenance ()
+BEGIN
+    -- query to get the wishes results
+    SELECT v.Plate AS Vehicle_Plate,
+           s.ServiceName AS Service
+    FROM repair AS r
+    JOIN vehicle AS v
+    ON v.IdVehicle = r.FkVehicle
+    JOIN service AS s
+    ON s.IdService = r.FkService
+    WHERE (r.FkService = 4)OR
+          (r.FkService = 2)OR
+          (r.FkService = 3);
+END $$
+
+DELIMITER ;
+```
+
+#### Resultado
+
+![alt text](ResultImages/image29.png)
+
+### 8. Crear un procedimiento almacenado para insertar una nueva orden de compra
+
+```sql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS newPurchaseOrder $$
+
+CREATE PROCEDURE newPurchaseOrder(
+    IN Date DATE,
+    IN IdSuplier INT,
+    IN IdEmploye INT
+)
+BEGIN
+    -- Insert the data
+    INSERT INTO purchase_order(
+        IdPurchaseOrder,
+        OrderDate,
+        FkSuplier,
+        FkEmploye
+    )
+    VALUES
+    (
+        NULL,
+        Date,
+        IdSuplier,
+        IdEmploye
+    );
+
+    -- Select the data insert
+    SELECT po.IdPurchaseOrder AS ID,
+           po.OrderDate AS Date,
+           po.FkSuplier AS ID_Suplier,
+           po.FkEmploye AS ID_Employe
+    FROM purchase_order AS po
+    ORDER BY IdPurchaseOrder DESC
+    LIMIT 1;
+END $$
+
+DELIMITER ;
+```
+#### Resultado
+
+![alt text](ResultImages/image30.png)
+
+### 9. Crear un procedimiento almacenado para actualizar los datos de un cliente
+
+```sql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS updateClient $$
+
+CREATE PROCEDURE updateClient(
+    IN ID INT,
+    IN NewName1 VARCHAR(85),
+    IN NewName2 VARCHAR(85),
+    IN NewLastName1 VARCHAR(36),
+    IN NewLastName2 VARCHAR(36),
+    IN NewAddress VARCHAR(100),
+    IN NewEmail VARCHAR(100)
+)
+BEGIN
+    -- declare variable message
+    DECLARE message VARCHAR(100);
+
+    -- update the client data
+    UPDATE client AS c
+    SET c.Name1 = NewName1,
+        c.Name2 = NewName2,
+        c.LastName1 = NewLastName1,
+        c.LastName2 = NewLastName2,
+        c.Address = NewAddress,
+        c.Email = NewEmail
+    WHERE
+        c.IdClient = ID;
+    
+    IF ROW_COUNT() > 0 THEN
+		SET message = 'El registro se ha actualizado exitosamente';
+	ELSE
+		SET message = 'Error al actualizar el registro';
+	END IF;
+	
+	SELECT message AS 'Mensaje';
+
+END $$
+
+DELIMITER ;
+```
+
+#### Resultado
+
+![alt text](ResultImages/image31.png)
+
+### 10. Crear un procedimiento almacenado para obtener los servicios más solicitados en un período
+
+```sql
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS getBestServicesBetween $$
+
+CREATE PROCEDURE getBestServicesBetween(
+    IN Date1 DATE,
+    IN Date2 DATE
+)
+BEGIN
+    -- query to select the best services selected between a date
+    SELECT s.ServiceName AS Service, SUM(r.FkService) AS Total_Selects
+    FROM repair AS r
+    JOIN service AS s
+    ON s.IdService = r.FkService
+    WHERE r.Date BETWEEN Date1 AND Date2
+    GROUP BY s.ServiceName
+    ORDER BY Total_Selects DESC;
+END $$
+
+DELIMITER ;
+```
+
+#### Resultado
+
+![alt text](ResultImages/image32.png)
