@@ -1,4 +1,4 @@
-# MySQL_Project
+# Taller Automotriz (Base de datos realizada para un Taller Automotriz)
 
 ## Consultas Requeridas
 ### 1. Obtener el historial de reparaciones de un vehículo específico
